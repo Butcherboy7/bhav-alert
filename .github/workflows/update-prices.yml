@@ -1,0 +1,23 @@
+name: Update Prices
+on:
+  schedule:
+    - cron: '45 0 * * *' # 06:15 AM IST
+    - cron: '30 6 * * *' # 12:00 PM IST
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run Scraper
+        run: |
+          cd scripts
+          npm install
+          node scraper.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}

@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+
+# Environment variables
+.env*.local
+.env
+
+# Service Accounts / Keys
+*.json
+!package.json
+!tsconfig.json
+!next.config.json
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
