@@ -13,6 +13,7 @@ import PriceAlertModal, { checkAlerts } from "@/components/PriceAlertModal";
 import { useTranslation } from "@/hooks/useTranslation";
 import LanguageSelector from "@/components/LanguageSelector";
 import RazorpayButton from "@/components/RazorpayButton";
+import { EssentialsHub } from "@/components/EssentialsHub";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -343,6 +344,11 @@ export default function Home() {
         >
           🔄 {t("refreshButton")}
         </button>
+      </div>
+
+      {/* Lockdown Essentials Hub - New Section */}
+      <div className="px-5 mt-8">
+        <EssentialsHub />
       </div>
 
       {/* Razorpay Support Section */}
