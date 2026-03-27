@@ -1,19 +1,25 @@
 import { NextResponse } from "next/server";
 import admin from "firebase-admin";
 
-// Initialize Firebase Admin if not already initialized
-if (!admin.apps.length) {
-  try {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  } catch (error) {
-    console.error("Firebase admin init error:", error);
+function getDb() {
+  if (!admin.apps.length) {
+    try {
+      const serviceAccountStr = process.env.FIREBASE_SERVICE_ACCOUNT;
+      if (!serviceAccountStr) {
+        console.warn("FIREBASE_SERVICE_ACCOUNT is not set. Admin API will fail if called.");
+        return null;
+      }
+      const serviceAccount = JSON.parse(serviceAccountStr);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    } catch (error) {
+      console.error("Firebase admin init error:", error);
+      return null;
+    }
   }
+  return admin.firestore();
 }
-
-const db = admin.firestore();
 
 export async function POST(request: Request) {
   try {
@@ -25,6 +31,11 @@ export async function POST(request: Request) {
 
     if (!username || !password || username !== validUsername || password !== validPassword) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const db = getDb();
+    if (!db) {
+      return NextResponse.json({ success: false, error: "Database not configured" }, { status: 500 });
     }
 
     if (!commodity || price === undefined || change === undefined) {

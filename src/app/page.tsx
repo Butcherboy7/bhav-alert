@@ -225,7 +225,7 @@ export default function Home() {
       {changesToday.length > 0 && showChanges && (
         <div className="bg-orange-500 text-white text-[10px] font-bold py-2 px-4 flex items-center justify-between">
           <div className="flex space-x-3 overflow-x-auto scrollbar-hide flex-1 whitespace-nowrap mr-2">
-            <span className="uppercase tracking-widest opacity-80">Today's Changes:</span>
+            <span className="uppercase tracking-widest opacity-80">Today&apos;s Changes:</span>
             {changesToday.map((c, i) => (
               <span key={i} className={c.val > 0 ? "text-red-100" : "text-green-200"}>
                 {c.label} {c.val > 0 ? "↑" : "↓"}₹{Math.abs(c.val)}

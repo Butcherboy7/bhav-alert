@@ -45,7 +45,7 @@ export default function CityPage({ params }: { params: { city: string } }) {
 
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 space-y-4">
           <h2 className="text-lg font-black text-gray-800">
-            📊 Today's Market Rates for {cityName}
+            📊 Today&apos;s Market Rates for {cityName}
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed font-medium">
             Get real-time updates for fuel (Petrol/Diesel), Gold (24K/22K), domestic LPG, and essential commodities like Onion, Rice, and Milk for {cityName}, {city?.state}.
