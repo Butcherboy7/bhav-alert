@@ -16,6 +16,7 @@ const COMMODITIES = [
 const CITIES = ["mumbai", "delhi", "bangalore", "hyderabad", "chennai", "kolkata", "pune", "ahmedabad", "jaipur", "lucknow"];
 
 export default function AdminPage() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [commodity, setCommodity] = useState("petrol");
@@ -25,6 +26,7 @@ export default function AdminPage() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ... (keep selectedCommodity and basically rest of the initial logic)
   const selectedCommodity = COMMODITIES.find((c) => c.key === commodity);
 
   const handleLogin = () => {
@@ -41,6 +43,7 @@ export default function AdminPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          username,
           password,
           commodity,
           city: selectedCommodity?.needsCity ? city : undefined,
@@ -63,6 +66,13 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm space-y-4">
           <h1 className="text-2xl font-black text-gray-800 text-center">🔐 Admin</h1>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm"
+          />
           <input
             type="password"
             value={password}

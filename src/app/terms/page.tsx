@@ -42,7 +42,7 @@ export default function TermsPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-gray-700">Contact</h2>
         <p className="text-sm text-gray-600 leading-relaxed">
-          Questions about these terms? Contact us at: <strong>[CONTACT_EMAIL]</strong>
+          Questions about these terms? Contact us at: <strong>acexuzair@gmail.com</strong>
         </p>
       </section>
 

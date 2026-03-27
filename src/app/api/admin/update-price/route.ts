@@ -18,9 +18,12 @@ const db = admin.firestore();
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { password, commodity, city, price, change } = body;
+    const { username, password, commodity, city, price, change } = body;
 
-    if (!password || password !== process.env.ADMIN_PASSWORD) {
+    const validUsername = process.env.ADMIN_USERNAME || "uzair";
+    const validPassword = process.env.ADMIN_PASSWORD || "admin123";
+
+    if (!username || !password || username !== validUsername || password !== validPassword) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 

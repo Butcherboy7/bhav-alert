@@ -49,7 +49,7 @@ export default function PrivacyPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-gray-700">Contact</h2>
         <p className="text-sm text-gray-600 leading-relaxed">
-          For privacy concerns, contact us at: <strong>[CONTACT_EMAIL]</strong>
+          For privacy concerns, contact us at: <strong>acexuzair@gmail.com</strong>
         </p>
       </section>
 

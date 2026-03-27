@@ -39,28 +39,28 @@ export const AdSenseUnit: React.FC<AdSenseUnitProps> = ({ slot, format = "auto" 
   );
 };
 
-/* ─── Gold Affiliate Card ─── */
-export const GoldAffiliateCard: React.FC = () => {
-  const paytmUrl = process.env.NEXT_PUBLIC_PAYTM_AFFILIATE_URL || "https://paytm.com/gold";
+/* ─── Amazon Affiliate Card ─── */
+export const AmazonEssentialsCard: React.FC = () => {
+  const amazonUrl = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_URL || "https://amazon.in";
 
   return (
     <a
-      href={paytmUrl}
+      href={amazonUrl}
       target="_blank"
       rel="noopener noreferrer sponsored"
-      className="block bg-gradient-to-br from-amber-600 to-yellow-700 rounded-2xl p-5 shadow-lg border border-amber-400/30 text-white relative overflow-hidden group transition-all hover:scale-[0.99] active:scale-95"
+      className="block bg-gradient-to-br from-gray-800 to-black rounded-2xl p-5 shadow-lg border border-orange-400/30 text-white relative overflow-hidden group transition-all hover:scale-[0.99] active:scale-95"
     >
-      <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+      <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl" />
       <div className="relative z-10 flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
-            <span className="text-xl">💰</span>
-            <h3 className="font-black text-sm tracking-tight">Buy Digital Gold</h3>
+            <span className="text-xl">📦</span>
+            <h3 className="font-black text-sm tracking-tight text-orange-400">Amazon Essentials</h3>
           </div>
-          <p className="text-[10px] text-amber-100/80 font-medium">Start with ₹1 on Paytm</p>
+          <p className="text-[10px] text-gray-300 font-medium">Shop Gas Stoves, Lighters & More</p>
         </div>
-        <span className="bg-white/20 px-4 py-2 rounded-xl text-xs font-bold backdrop-blur-sm">
-          Buy →
+        <span className="bg-orange-500/20 text-orange-400 border border-orange-500/50 px-4 py-2 rounded-xl text-xs font-bold backdrop-blur-sm">
+          Shop →
         </span>
       </div>
     </a>
@@ -127,7 +127,7 @@ export const FuelAffiliateCard: React.FC = () => {
 export const FallbackAdBanner: React.FC = () => {
   return (
     <div className="space-y-3">
-      <GoldAffiliateCard />
+      <AmazonEssentialsCard />
       <GroceryAffiliateCard />
     </div>
   );

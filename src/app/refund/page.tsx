@@ -28,7 +28,7 @@ export default function RefundPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-bold text-gray-700">Disputes</h2>
         <p className="text-sm text-gray-600 leading-relaxed">
-          If you believe a payment was made in error or without your authorization, please contact us at <strong>[CONTACT_EMAIL]</strong> within 7 days. We will review each case individually and respond within 48 hours.
+          If you believe a payment was made in error or without your authorization, please contact us at <strong>acexuzair@gmail.com</strong> within 7 days. We will review each case individually and respond within 48 hours.
         </p>
       </section>
 
