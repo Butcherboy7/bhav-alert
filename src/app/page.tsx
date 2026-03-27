@@ -78,7 +78,7 @@ export default function Home() {
   return (
     <div className="flex-1 flex flex-col pb-24">
       {/* 1. Header (bg-gradient orange) */}
-      <header className="bg-gradient-to-br from-orange-400 to-red-600 p-6 space-y-4 shadow-xl shadow-orange-100 rounded-b-[2rem] z-10 transition-all duration-300">
+      <header className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 space-y-4 shadow-xl shadow-orange-100 rounded-b-[2rem] z-10 transition-all duration-300">
         <div className="flex justify-between items-center">
           <CitySelector
             selectedCity={city}
