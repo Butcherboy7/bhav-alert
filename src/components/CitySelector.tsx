@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { CITIES } from "@/lib/cities";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CitySelectorProps {
   selectedCity: string;
@@ -12,6 +13,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   selectedCity,
   onCityChange,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +49,7 @@ const CitySelector: React.FC<CitySelectorProps> = ({
         <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2">
           <div className="p-3 bg-gray-50 border-b border-gray-100">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider px-2">
-              Select Your City
+              {t("selectCity")}
             </h3>
           </div>
           <div className="max-h-80 overflow-y-auto overscroll-contain">

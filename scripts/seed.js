@@ -37,8 +37,8 @@ const data = {
     lucknow:   { price: 87.55, change: 0 }
   },
   gold: {
-    price_24k: 87000,
-    price_22k: 79750,
+    price_24k: 144710,
+    price_22k: 132650,
     change_24k: 0,
     change_22k: 0
   },
@@ -46,6 +46,16 @@ const data = {
   onion: { price: 35,  change: 0 },
   rice:  { price: 45,  change: 0 },
   milk:  { price: 27,  change: 0 },
+  trends: {
+    petrol: { direction: "stable", percent: 0 },
+    diesel: { direction: "stable", percent: 0 },
+    gold24k: { direction: "stable", percent: 0 },
+    gold22k: { direction: "stable", percent: 0 },
+    lpg: { direction: "stable", percent: 0 },
+    onion: { direction: "stable", percent: 0 },
+    rice: { direction: "stable", percent: 0 },
+    milk: { direction: "stable", percent: 0 },
+  },
   updatedAt: new Date().toISOString()
 };
 

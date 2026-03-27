@@ -62,9 +62,6 @@ async function scrapeFuelPrices() {
       }
     });
 
-    // Similar for Diesel - Goodreturns often has separate sections/pages or combined tables.
-    // If not found, we fallback or try another scrape.
-    // For this implementation, we assume we extract both from their respective tables.
     const resD = await axios.get("https://www.goodreturns.in/diesel-price.html", {
       headers: { "User-Agent": USER_AGENT },
       timeout: TIMEOUT,
@@ -91,25 +88,93 @@ async function scrapeFuelPrices() {
 }
 
 async function scrapeGoldPrices() {
-  console.log("Scraping gold prices...");
+  console.log("Fetching gold prices...");
+
+  // Primary: goldapi.io API
+  if (process.env.GOLD_API_KEY) {
+    try {
+      const res = await axios.get("https://www.goldapi.io/api/XAU/INR", {
+        headers: { "x-access-token": process.env.GOLD_API_KEY },
+        timeout: TIMEOUT,
+      });
+      const pricePerOunce = res.data.price;
+      const price24kPer10g = Math.round((pricePerOunce / 31.1035) * 10 / 10) * 10;
+      const price22kPer10g = Math.round((price24kPer10g * 0.916) / 10) * 10;
+
+      console.log(`Gold API: 24K=₹${price24kPer10g}, 22K=₹${price22kPer10g}`);
+      return {
+        price_24k: price24kPer10g,
+        price_22k: price22kPer10g,
+        change_24k: 0,
+        change_22k: 0,
+      };
+    } catch (err) {
+      console.error("Gold API failed, falling back to scraper:", err.message);
+    }
+  }
+
+  // Fallback: Goodreturns scraping
   try {
     const res = await axios.get("https://www.goodreturns.in/gold-rates/", {
       headers: { "User-Agent": USER_AGENT },
       timeout: TIMEOUT,
     });
     const $ = cheerio.load(res.data);
-    const gold24k = parseFloat($(".gold_rate_24_avg").text().replace(/[^\d.]/g, ""));
-    const gold22k = parseFloat($(".gold_rate_22_avg").text().replace(/[^\d.]/g, ""));
+
+    // Try multiple selectors for resilience
+    let gold24k = 0;
+    let gold22k = 0;
+
+    // Selector approach 1: data attributes
+    $("[data-carat='24']").each((_, el) => {
+      const val = parseFloat($(el).text().replace(/[^\d.]/g, ""));
+      if (val > 50000) gold24k = val;
+    });
+    $("[data-carat='22']").each((_, el) => {
+      const val = parseFloat($(el).text().replace(/[^\d.]/g, ""));
+      if (val > 50000) gold22k = val;
+    });
+
+    // Selector approach 2: table search
+    if (!gold24k) {
+      $("td").each((_, el) => {
+        const text = $(el).text().trim();
+        if (text.includes("24") && text.toLowerCase().includes("carat")) {
+          const priceCell = $(el).next();
+          const val = parseFloat(priceCell.text().replace(/[^\d.]/g, ""));
+          if (val > 50000) gold24k = val;
+        }
+        if (text.includes("22") && text.toLowerCase().includes("carat")) {
+          const priceCell = $(el).next();
+          const val = parseFloat(priceCell.text().replace(/[^\d.]/g, ""));
+          if (val > 50000) gold22k = val;
+        }
+      });
+    }
+
+    // Selector approach 3: common class patterns
+    if (!gold24k) {
+      const priceTexts = [];
+      $("span, td, div").each((_, el) => {
+        const text = $(el).text().replace(/[^\d]/g, "");
+        const val = parseInt(text);
+        if (val > 100000 && val < 200000) priceTexts.push(val);
+      });
+      if (priceTexts.length >= 2) {
+        gold24k = Math.max(...priceTexts.slice(0, 4));
+        gold22k = Math.min(...priceTexts.slice(0, 4));
+      }
+    }
 
     return {
-      price_24k: gold24k || 75000,
-      price_22k: gold22k || 69000,
+      price_24k: gold24k || 144710,
+      price_22k: gold22k || 132650,
       change_24k: 0,
       change_22k: 0,
     };
   } catch (err) {
     console.error("Gold scrape failed:", err.message);
-    return { price_24k: 72000, price_22k: 66000, change_24k: 0, change_22k: 0 };
+    return { price_24k: 144710, price_22k: 132650, change_24k: 0, change_22k: 0 };
   }
 }
 
@@ -121,11 +186,10 @@ async function scrapeLPGPrice() {
       timeout: TIMEOUT,
     });
     const $ = cheerio.load(res.data);
-    // Find Delhi price in any table cell containing Delhi
     let price = 903;
     $("td:contains('Delhi')").next().each((i, el) => {
-        const val = parseFloat($(el).text().trim());
-        if (!isNaN(val)) price = val;
+      const val = parseFloat($(el).text().trim());
+      if (!isNaN(val)) price = val;
     });
     return { price, change: 0 };
   } catch (err) {
@@ -144,10 +208,12 @@ async function scrapeGroceryPrices() {
   if (!process.env.DATA_GOV_API_KEY) return fallback;
 
   try {
-    // Example fetch from data.gov.in for Onion
-    const res = await axios.get(`https://api.data.gov.in/resource/9ef2781d-7a8c-4dc9-b1d1-3ff391b93f77?api-key=${process.env.DATA_GOV_API_KEY}&format=json&filters[state]=Maharashtra&filters[district]=Mumbai`, { timeout: TIMEOUT });
-    const onionWholesale = res.data.records[0]?.modal_price || 3000; // per quintal
-    const onionRetail = (onionWholesale / 100) * 1.3; // 30% retail margin
+    const res = await axios.get(
+      `https://api.data.gov.in/resource/9ef2781d-7a8c-4dc9-b1d1-3ff391b93f77?api-key=${process.env.DATA_GOV_API_KEY}&format=json&filters[state]=Maharashtra&filters[district]=Mumbai`,
+      { timeout: TIMEOUT }
+    );
+    const onionWholesale = res.data.records[0]?.modal_price || 3000;
+    const onionRetail = (onionWholesale / 100) * 1.3;
 
     return {
       onion: { price: Math.round(onionRetail * 10) / 10 || 40, change: 0 },
@@ -165,7 +231,6 @@ async function calculateChanges(todayData) {
 
   const prev = yesterdayDoc.data();
 
-  // Fuel changes
   Object.keys(todayData.petrol).forEach((city) => {
     if (prev.petrol?.[city]) {
       todayData.petrol[city].change = Math.round((todayData.petrol[city].price - prev.petrol[city].price) * 100) / 100;
@@ -177,13 +242,11 @@ async function calculateChanges(todayData) {
     }
   });
 
-  // Gold changes
   if (prev.gold) {
     todayData.gold.change_24k = todayData.gold.price_24k - prev.gold.price_24k;
     todayData.gold.change_22k = todayData.gold.price_22k - prev.gold.price_22k;
   }
 
-  // LPG/Grocery
   ["lpg", "onion", "rice", "milk"].forEach((cat) => {
     if (prev[cat]) {
       todayData[cat].change = Math.round((todayData[cat].price - prev[cat].price) * 100) / 100;
@@ -191,6 +254,56 @@ async function calculateChanges(todayData) {
   });
 
   return todayData;
+}
+
+async function computeWeekTrends(todayData) {
+  console.log("Computing 7-day trends...");
+  const trends = {};
+  const days = [];
+
+  for (let i = 1; i <= 7; i++) {
+    const dateStr = getISTDate(i);
+    const doc = await db.collection("prices").doc(dateStr).get();
+    if (doc.exists) days.push(doc.data());
+  }
+
+  if (days.length === 0) {
+    return { petrol: "stable", diesel: "stable", gold24k: "stable", gold22k: "stable", lpg: "stable", onion: "stable", rice: "stable", milk: "stable" };
+  }
+
+  const oldest = days[days.length - 1];
+
+  // Petrol trend (mumbai as representative)
+  const commodities = [
+    { key: "petrol", getValue: (d) => d.petrol?.mumbai?.price },
+    { key: "diesel", getValue: (d) => d.diesel?.mumbai?.price },
+    { key: "gold24k", getValue: (d) => d.gold?.price_24k },
+    { key: "gold22k", getValue: (d) => d.gold?.price_22k },
+    { key: "lpg", getValue: (d) => d.lpg?.price },
+    { key: "onion", getValue: (d) => d.onion?.price },
+    { key: "rice", getValue: (d) => d.rice?.price },
+    { key: "milk", getValue: (d) => d.milk?.price },
+  ];
+
+  for (const { key, getValue } of commodities) {
+    const todayVal = getValue(todayData);
+    const oldVal = getValue(oldest);
+    if (todayVal && oldVal && oldVal > 0) {
+      const pctChange = ((todayVal - oldVal) / oldVal) * 100;
+      const rounded = Math.round(pctChange * 10) / 10;
+      if (rounded > 0.1) {
+        trends[key] = { direction: "up", percent: rounded };
+      } else if (rounded < -0.1) {
+        trends[key] = { direction: "down", percent: Math.abs(rounded) };
+      } else {
+        trends[key] = { direction: "stable", percent: 0 };
+      }
+    } else {
+      trends[key] = { direction: "stable", percent: 0 };
+    }
+  }
+
+  return trends;
 }
 
 async function main() {
@@ -213,12 +326,13 @@ async function main() {
   };
 
   todayData = await calculateChanges(todayData);
+  todayData.trends = await computeWeekTrends(todayData);
 
   const todayStr = getISTDate();
   await db.collection("prices").doc(todayStr).set(todayData);
   await db.collection("prices").doc("latest").set(todayData);
 
-  console.log(`Priced updated for ${todayStr}`);
+  console.log(`Prices updated for ${todayStr}`);
   process.exit(0);
 }
 

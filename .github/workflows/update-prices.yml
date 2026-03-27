@@ -1,8 +1,12 @@
 name: Update Prices
 on:
   schedule:
-    - cron: '45 0 * * *' # 06:15 AM IST
-    - cron: '30 6 * * *' # 12:00 PM IST
+    - cron: '30 0 * * *'  # 6:00 AM IST
+    - cron: '30 4 * * *'  # 10:00 AM IST
+    - cron: '30 6 * * *'  # 12:00 PM IST
+    - cron: '30 9 * * *'  # 3:00 PM IST
+    - cron: '30 12 * * *' # 6:00 PM IST
+    - cron: '30 15 * * *' # 9:00 PM IST
   workflow_dispatch:
 
 jobs:
@@ -21,3 +25,4 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+          GOLD_API_KEY: ${{ secrets.GOLD_API_KEY }}
