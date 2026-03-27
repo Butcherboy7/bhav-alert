@@ -14,14 +14,20 @@ export const getTodayIST = (): string => {
 };
 
 const fetchFromFirestore = async (): Promise<DayPrices | null> => {
+  console.log("Fetching from Firestore... API Key:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? "EXISTS" : "MISSING");
+  console.log("Project ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+  
   try {
     // Try 'latest' document first
     const latestDocRef = doc(db, "prices", "latest");
     const latestDoc = await getDoc(latestDocRef);
 
     if (latestDoc.exists()) {
-      return latestDoc.data() as DayPrices;
+      const data = latestDoc.data() as DayPrices;
+      console.log("✅ Latest doc found:", data);
+      return data;
     }
+    console.log("⚠️ Latest doc not found, checking today...");
 
     // Fallback to today's date document
     const today = getTodayIST();
@@ -29,9 +35,12 @@ const fetchFromFirestore = async (): Promise<DayPrices | null> => {
     const todayDoc = await getDoc(todayDocRef);
 
     if (todayDoc.exists()) {
-      return todayDoc.data() as DayPrices;
+      const data = todayDoc.data() as DayPrices;
+      console.log("✅ Today doc found:", data);
+      return data;
     }
 
+    console.log("❌ No documents found in Firestore at prices/latest or prices/" + today);
     return null;
   } catch (error) {
     console.error("Firestore fetch error:", error);

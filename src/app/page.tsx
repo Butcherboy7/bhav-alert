@@ -130,24 +130,42 @@ export default function Home() {
       </div>
 
       {/* 3. Price Grid */}
-      <div className="px-5 grid grid-cols-2 gap-4">
-        {loading
-          ? Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="skeleton h-[120px] w-full rounded-2xl shadow-sm opacity-50"
-              />
-            ) as any)
-          : displayPrices.map((p, i) => (
-              <PriceCard
-                key={i}
-                emoji={p.emoji}
-                name={p.name}
-                price={p.price}
-                change={p.change}
-                unit={p.unit}
-              />
-            ))}
+      <div className="px-5">
+        {!loading && !prices ? (
+          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-[2rem] p-12 flex flex-col items-center justify-center text-center space-y-4">
+            <span className="text-4xl">🏜️</span>
+            <div className="space-y-1">
+              <h3 className="text-gray-800 font-black text-lg">Could not load prices</h3>
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-wider">Please tap refresh to try again</p>
+            </div>
+            <button
+               onClick={handleRefresh}
+               className="bg-orange-500 text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-orange-100 active:scale-95 transition-all"
+            >
+              🔄 Refresh Now
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {loading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="skeleton h-[120px] w-full rounded-2xl shadow-sm opacity-50"
+                  />
+                ))
+              : displayPrices.map((p, i) => (
+                  <PriceCard
+                    key={i}
+                    emoji={p.emoji}
+                    name={p.name}
+                    price={p.price}
+                    change={p.change}
+                    unit={p.unit}
+                  />
+                ))}
+          </div>
+        )}
       </div>
 
       {/* 4. FallbackAdBanner */}

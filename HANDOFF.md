@@ -17,15 +17,13 @@ The project has been initialized with the necessary configuration and library fi
 ### Completed Tasks
 - [x] Initialized `package.json` and config files.
 - [x] Implemented Firebase and price fetching logic.
-- [x] Created `PriceCard`, `CitySelector`, `InstallPrompt`, and `AdBanner` components.
-- [x] Configured `RootLayout` with PWA meta and AdSense.
-- [x] Built the Main Page with real-time price tracking and city persistence.
-- [x] Integrated sharing, refresh, and donation systems.
+- [x] Created components (PriceCard, CitySelector, InstallPrompt, etc.).
+- [x] Built the Main Page and integrated sharing/donation systems.
+- [x] Implemented Firestore seed script and seeded the database.
+- [x] Initialized Git and pushed to GitHub.
 
 ### Pending Tasks
 - [ ] Deploy to Vercel and configure environment variables.
-- [x] Implemented Firestore seed script and installed dependencies.
-- [x] Connected to actual Firestore data (ran `seed.js`).
 - [ ] Test PWA installation on physical devices.
 
 ## Key Files
