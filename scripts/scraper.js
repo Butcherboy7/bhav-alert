@@ -40,51 +40,70 @@ const getISTDate = (daysAgo = 0) => {
 
 async function scrapeFuelPrices() {
   console.log("Scraping fuel prices...");
-  try {
-    const res = await axios.get("https://www.goodreturns.in/petrol-price.html", {
-      headers: { "User-Agent": USER_AGENT },
-      timeout: TIMEOUT,
-    });
-    const $ = cheerio.load(res.data);
-    const petrol = {};
-    const diesel = {};
-
-    $(".moneywise-pet-dies-list tr").each((i, row) => {
-      if (i === 0) return;
-      const cells = $(row).find("td");
-      if (cells.length >= 3) {
-        const cityName = $(cells[0]).text().trim();
-        const fuelPrice = parseFloat($(cells[1]).text().trim());
-        const mappedCity = cityMap[cityName];
-        if (mappedCity) {
-          petrol[mappedCity] = { price: fuelPrice, change: 0 };
-        }
+  const fuelResult = { petrol: {}, diesel: {} };
+  
+  // Define sources in order of reliability
+  const sources = [
+    {
+      name: "Fuel Price API (Public)",
+      url: "https://petrolpriceapi.herokuapp.com/india",
+      parser: (data) => {
+        const mapping = {
+          "Mumbai": "mumbai", "New Delhi": "delhi", "Bengaluru": "bangalore",
+          "Hyderabad": "hyderabad", "Chennai": "chennai", "Kolkata": "kolkata"
+        };
+        Object.entries(data).forEach(([city, prices]) => {
+          const key = mapping[city];
+          if (key) {
+            fuelResult.petrol[key] = { price: parseFloat(prices.petrol), change: 0 };
+            fuelResult.diesel[key] = { price: parseFloat(prices.diesel), change: 0 };
+          }
+        });
       }
-    });
-
-    const resD = await axios.get("https://www.goodreturns.in/diesel-price.html", {
-      headers: { "User-Agent": USER_AGENT },
-      timeout: TIMEOUT,
-    });
-    const $D = cheerio.load(resD.data);
-    $D(".moneywise-pet-dies-list tr").each((i, row) => {
-      if (i === 0) return;
-      const cells = $D(row).find("td");
-      if (cells.length >= 3) {
-        const cityName = $D(cells[0]).text().trim();
-        const fuelPrice = parseFloat($D(cells[1]).text().trim());
-        const mappedCity = cityMap[cityName];
-        if (mappedCity) {
-          diesel[mappedCity] = { price: fuelPrice, change: 0 };
-        }
+    },
+    {
+      name: "TechStuffBoy API",
+      url: "https://p-fuel-api.vercel.app/all",
+      parser: (data) => {
+        const cityKeyMap = {
+          "Mumbai": "mumbai", "New Delhi": "delhi", "Bengaluru": "bangalore", 
+          "Hyderabad": "hyderabad", "Chennai": "chennai", "Kolkata": "kolkata",
+          "Pune": "pune", "Ahmedabad": "ahmedabad", "Jaipur": "jaipur", "Lucknow": "lucknow"
+        };
+        Object.values(data.states || {}).forEach(state => {
+          if (state.cities) {
+            Object.entries(state.cities).forEach(([cityName, prices]) => {
+              const key = cityKeyMap[cityName];
+              if (key) {
+                fuelResult.petrol[key] = { price: parseFloat(prices.petrol), change: 0 };
+                fuelResult.diesel[key] = { price: parseFloat(prices.diesel), change: 0 };
+              }
+            });
+          }
+        });
       }
-    });
+    }
+  ];
 
-    return { petrol, diesel };
-  } catch (err) {
-    console.error("Fuel scrape failed:", err.message);
-    return { petrol: {}, diesel: {} };
+  for (const source of sources) {
+    try {
+      const res = await axios.get(source.url, { timeout: 8000 });
+      source.parser(res.data);
+      if (Object.keys(fuelResult.petrol).length > 0) {
+        console.log(`✅ Success with ${source.name}`);
+        break;
+      }
+    } catch (e) {
+      console.warn(`⚠️ Source ${source.name} failed`);
+    }
   }
+
+  // Final fallback: if everything failed, keep existing values or use default
+  if (Object.keys(fuelResult.petrol).length === 0) {
+    console.error("❌ ALL fuel sources failed.");
+  }
+
+  return fuelResult;
 }
 
 async function scrapeGoldPrices() {
