@@ -60,12 +60,6 @@ export default function CityPage({ params }: { params: { city: string } }) {
 
           <a 
             href="/"
-            onClick={(e) => {
-               try {
-                 localStorage.setItem(CITY_KEY, params.city);
-                 localStorage.setItem(CITY_NAME_KEY, cityName);
-               } catch (err) {}
-            }}
             className="block mt-6 bg-orange-500 text-white text-center py-4 rounded-xl font-black uppercase tracking-widest text-sm shadow-xl shadow-orange-200 transition-all hover:scale-[1.02] active:scale-95"
           >
             View live prices →

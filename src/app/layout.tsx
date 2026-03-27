@@ -3,6 +3,7 @@ import "./globals.css";
 import Script from "next/script";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://bhav-alert.vercel.app"),
   title: "Bhav Alert - Petrol, Gold, LPG Price Today India",
   description: "Check today's petrol price, gold rate, LPG cylinder price, onion price. Daily updates for 20+ Indian cities.",
   keywords: "petrol price today, gold rate today, diesel price, LPG price, onion price",

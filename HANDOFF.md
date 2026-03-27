@@ -25,34 +25,30 @@ The project has just undergone a massive Phase 2 upgrade, including multilingual
 - [x] **AdSense & Affiliates**:
     - Created compliance pages (`/privacy`, `/terms`, `/refund`, `/contact`).
     - Added AdSense logic and script tags to `layout.tsx` + `AdBanner.tsx`.
-    - Added Paytm/Blinkit/Fuel affiliate cards when AdSense is unavailable.
+    - Integrated **Amazon Essentials** affiliate card as a high-conversion fallback.
 - [x] **SEO & performance**:
     - Added structured JSON-LD data.
     - SSR implemented for `/[city]/page.tsx`.
     - `manifest.json` updated with categories/screenshots for better PWA install prompts.
-    - Added pull-to-refresh handling and offline "沙漠" banner.
+    - Added pull-to-refresh handling and offline banner.
+- [x] **Vercel Build Stability**: 
+    - Fixed Firebase Admin initialization to prevent build-time crashes.
+    - Escaped all HTML entities (quotes) to comply with strict production linting.
 
 ### Required Setup Instructions
 
-#### 1. GoldAPI.io Key
-- Go to [goldapi.io](https://www.goldapi.io/) and generate a free API key.
-- Add it to your `.env.local` as `GOLD_API_KEY`.
-- Also add it to GitHub **Settings > Secrets and variables > Actions** as `GOLD_API_KEY`.
+#### 1. GoldAPI.io Key (DONE ✅)
+- Added `GOLD_API_KEY="goldapi-eq8vpsmn8r6hlt-io"` to `.env.local`.
+- **Action Required**: Add this to GitHub Secrets for the scraper.
 
-#### 2. Google AdSense
-- Go to Google AdSense, add `bhavalert.vercel.app`.
-- AdSense will scan the `privacy`, `terms`, `refund`, `contact` pages (automatically generated).
-- Add your Client ID to `.env.local` as `NEXT_PUBLIC_ADSENSE_CLIENT_ID` (format `ca-pub-xxx...`).
+#### 2. Google AdSense (IN PROGRESS ⏳)
+- Added `NEXT_PUBLIC_ADSENSE_CLIENT_ID` placeholder in `.env.local`.
+- **Action Required**: User to follow Step 1-3 to link the site.
 
 #### 3. Razorpay Payment Links
 - Go to Razorpay Dashboard > Payment Links.
 - Create 3 static universal links for ₹29, ₹49, and ₹99.
 - Add them to `.env.local` as `NEXT_PUBLIC_RAZORPAY_LINK_29` etc.
-
-#### 4. Paytm Affiliate Integration
-- Join an affiliate network like EarnKaro or directly with Paytm/PhonePe.
-- Grab your digital gold trackable link.
-- Add to `.env.local` as `NEXT_PUBLIC_PAYTM_AFFILIATE_URL`.
 
 #### 5. Admin Page Usage
 - Navigate to `https://bhavalert.vercel.app/admin`.
